@@ -388,7 +388,7 @@ def approach(mover, target, mode):
     fighters = mover.db.Combat_TurnHandler.db.fighters
     # Before anything happens, 'stop' when reaching range 0 or when running out of moves.
     if mover.db.Combat_Range[target] == 0 or mover.db.Combat_Moves <= 0:
-        if mode != "forced":
+        if mode == "normal":
             return ["stop"]
     # Then test for other characters blocking movement.
     for character in fighters:
