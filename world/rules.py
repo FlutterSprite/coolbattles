@@ -681,12 +681,16 @@ def special_hinder(target, user, effects):
     # If there's an inflict disabled action effect, give the disabled action condition to the target for 1 turn.
     if 'Inflict Disabled Action' in effects:
         add_condition(target, user, 'Disabled Action', 1 + 1)
-    # If there's a knockback effect, move the target back three spaces.
+    # If there's a knockback effect, move the target back two spaces, or four spaces for knockback+.
     if 'Knockback' in effects:
-        ms_withdraw(target, user, 3, "forced")
-    # If there's a pull in effect, move the target forward three spaces.
+        ms_withdraw(target, user, 2, "forced")
+    if 'Knockback+' in effects:
+        ms_withdraw(target, user, 4, "forced")
+    # If there's a pull in effect, move the target forward two spaces, or four spaces for pull in+.
     if 'Pull In' in effects:
-        ms_approach(target, user, 3, "forced")
+        ms_approach(target, user, 2, "forced")
+    if 'Pull In+' in effects:
+        ms_approach(target, user, 4, "forced")
 
 def special_drawback(target, user, effects):
     "Inflicts drawbacks on a special move's user."
@@ -784,7 +788,8 @@ def special_dictionary():
         'Inflict Debuffed MOB':(2, ['Special Melee Attack', 'Special Ranged Attack', 'Hinder Other'], [], [0,0,0,0,0,0], 'Target has -1 movement for 3 turns'),
         'Inflict Immobilization':(2, ['Special Melee Attack', 'Special Ranged Attack', 'Hinder Other'], [], [0,0,0,0,0,0], 'Target can\'t move next turn'),
         'Inflict Disabled Action':(3, ['Special Melee Attack', 'Special Ranged Attack', 'Hinder Other'], [], [0,0,0,0,0,0], 'Target can\'t take an action next turn'),
-        'Knockback':(2, ['Special Melee Attack', 'Special Ranged Attack', 'Hinder Other'], ['Pull In'], [0,0,0,0,0,0], 'Target is pushed 3 steps away from you'),
+        'Knockback':(1, ['Special Melee Attack', 'Special Ranged Attack', 'Hinder Other'], ['Pull In', 'Knockback+', 'Pull In+'], [0,0,0,0,0,0], 'Target is pushed 2 steps away from you'),
+        'Knockback+':(2, ['Special Melee Attack', 'Special Ranged Attack', 'Hinder Other'], ['Pull In', 'Pull In+', 'Knockback'], [0,0,0,0,0,0], 'Target is pushed 4 steps away from you'),
         'Leech':(2, ['Special Melee Attack', 'Special Ranged Attack'], ['No Damage'], [0,0,0,0,0,0], 'If your attack hits, recover given damage to HP'),
         'Lunge Attack':(2, ['Special Melee Attack'], ['Parting Attack'], [0,0,0,0,0,0], 'Move 2 steps forward for free before attacking'),
         'Melee-Only Defense':(-1, ['Special Defense'], ['Ranged-Only Defense'], [0,0,0,0,0,0], 'Only works against melee attacks'),
@@ -799,7 +804,8 @@ def special_dictionary():
         'Precise Attack':(2, ['Special Melee Attack', 'Special Ranged Attack'], ['Perfect Attack'], [0,0,0,0,0,0], 'Set attack roll to 6'),
         'Precise Defense':(2, ['Special Defense'], ['Precise Defense'], [0,0,0,0,0,0], 'Set defense roll to 6'),
         'Projected Strike':(2, ['Special Melee Attack'], ['Lunge'], [0,0,0,0,0,0], 'Use a melee attack at range'),
-        'Pull In':(2, ['Special Ranged Attack', 'Hinder Other'], ['Knockback'], [0,0,0,0,0,0], 'Target is pulled 3 steps closer to you'),
+        'Pull In':(1, ['Special Ranged Attack', 'Hinder Other'], ['Knockback', 'Knockback+', 'Pull In+'], [0,0,0,0,0,0], 'Target is pulled 2 steps closer to you'),
+        'Pull In+':(1, ['Special Ranged Attack', 'Hinder Other'], ['Knockback', 'Knockback+', 'Pull In+'], [0,0,0,0,0,0], 'Target is pulled 4 steps closer to you'),
         'Ranged-Only Defense':(-1, ['Special Defense'], ['Melee-Only Defense'], [0,0,0,0,0,0], 'Only works against ranged attacks'),
         'Risky Defense':(-1, ['Special Defense'], ['Precise Defense', 'Perfect Defense', 'Negate Damage'], [0,0,0,0,0,0], 'Take double damage if defense fails'),
         'Reflect':(2, ['Special Defense'], ['Counterattack'], [0,0,0,0,0,0], 'On successful defense, send attack back at attacker'),

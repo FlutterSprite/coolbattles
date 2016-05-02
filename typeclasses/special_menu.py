@@ -60,7 +60,7 @@ def prompt_second(caller, raw_input):
     caller.ndb.special_effect_1 = raw_input
     specialdict = rules.special_dictionary()
     for special in specialdict:
-        if caller.ndb.special_effect_1.lower() in str(special).lower():
+        if caller.ndb.special_effect_1.lower() == str(special).lower():
             caller.ndb.special_effect_1 = special
     
 
@@ -104,7 +104,7 @@ def name_special(caller, raw_input):
     if raw_input.lower() != "no":
         caller.ndb.special_effect_2 = raw_input
         for special in specialdict:
-            if caller.ndb.special_effect_2.lower() in str(special).lower():
+            if caller.ndb.special_effect_2.lower() == str(special).lower():
                 caller.ndb.special_effect_2 = special
     else:
         caller.ndb.special_effect_2 = ""
