@@ -1,5 +1,6 @@
 from random import randint
 from evennia import utils
+from evennia import ansi
 import math
 
 def roll_atk(character, attack_type, effects):
@@ -73,6 +74,7 @@ def damage_target(target, damage):
         target.location.msg_contents("%s is defeated!" % target)
     else:
         target.db.HP -= damage
+    prompt_update(target)
 
 def queue_attack(character, target, attack_message, effects, attack_type):
     "Queues an attack against a target, who can choose how to defend"
@@ -197,6 +199,7 @@ def recover(character):
     character.db.HP = max(1, (character.db.VIT * 3))
     character.db.SP = character.db.SPE * 2
     character.msg("|252HP and SP restored!|n")
+    prompt_update(character)
 
 def start_turn(character):
     "Makes actions available to a character at the start of their turn."
@@ -232,6 +235,7 @@ def start_turn(character):
         if status == 'Buffed MOB':
             character.db.Combat_Moves += 1
             character.msg("You have 1 more move available this turn. |255[|455Buffed MOB|255]|n")
+    prompt_update(character)
     
 
 def pass_turn(character):
@@ -240,6 +244,7 @@ def pass_turn(character):
     character.db.Combat_Moves = 0
     if character.db.Combat_Second:
         del character.db.Combat_Second
+    prompt_update(character)
 
 def combat_cleanup(character):
     "Cleans up all the combat-related attributes on a character."
@@ -257,6 +262,7 @@ def turn_prompt(character):
     for fighter in fighterlist:
         character.msg(combat_status_line(fighter, character))
     character.msg("|530--------------------------------------------------------------------------------|n")
+   
     
 
 def is_fighter(character):
@@ -466,6 +472,7 @@ def recover_hp(character, amount):
     if character.db.HP > (max(character.db.VIT * 3, 1)):
         character.db.HP = max(character.db.VIT * 3, 1)
     character.location.msg_contents("%s recovers from some damage! |252[|454+%i|252 HP]" % (character, amount))
+    prompt_update(character)
     
 def recover_sp(character, amount):
     "Recovers HP as part of a special move."
@@ -473,11 +480,13 @@ def recover_sp(character, amount):
     if character.db.SP > character.db.SPE * 2:
         character.db.SP = character.db.SPE * 2
     character.location.msg_contents("%s recovers some SP! |255[|455+%i|255 SP]" % (character, amount))
+    prompt_update(character)
 
 def reduce_hp(character, amount):
     "Reduces HP as part of a special move or harmful condition."
     character.location.msg_contents("%s takes damage! |252[|454-%i|252 HP]" % (character, amount))
     damage_target(character, amount)
+    prompt_update(character)
 
 def range_name(value):
     "Converts a range value to a name."
@@ -625,6 +634,32 @@ def combat_status_line(fighter, caller):
         rangereadout = ""
     name = "{:>20}".format(beforeformat_name + ":")
     return (name + " " + hbar + " " + spreadout + " " + rangereadout)
+    
+def prompt_update(character):
+    "Updates the given character's prompt. Called at the end of every command or when the character takes/heals damage."
+    if not is_fighter(character):
+        return
+    hbar = health_bar(character.db.HP, max(character.db.VIT * 3, 1), 20)
+    action = ""
+    moves = ""
+    sptotal = "|255SP: |455%i |255/|455 %i|n" % (character.db.SP, character.db.SPE * 2)
+    engaged = False
+    # Checks to see if there are any fighters engaged with character:
+    if character.db.Combat_TurnHandler and character.db.Combat_Range and character.db.Combat_TurnHandler.db.fighters:
+        for fighter in character.db.Combat_TurnHandler.db.fighters:
+            if fighter != character and character.db.Combat_Range[fighter] == 0:
+                engaged = True
+    if character.db.Combat_Actions:
+        action = "|525[Action Ready]|n "
+        if engaged:
+            action = "|522[Action Ready]|n "
+    if character.db.Combat_Moves:
+        moves = "|552[Moves: |554%i|552]|n" % character.db.Combat_Moves
+    if character.db.Combat_Second:
+        action = "|255[Second Attack Ready] |n"
+    promptline = ("%s: %s %s %s%s" % (str(character), hbar, sptotal, action, moves))
+    character.msg(prompt=ansi.strip_ansi(promptline))
+    
 
 def special_cost(effects):
     "Returns the cost of a special move based on its effects."

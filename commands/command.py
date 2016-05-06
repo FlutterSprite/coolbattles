@@ -141,6 +141,9 @@ class MuxCommand(default_cmds.MuxCommand):
         # this can be removed in your child class, it's just
         # printing the ingoing variables as a demo.
         super(MuxCommand, self).func()
+    def at_post_cmd(self):
+        "Called after self.func()"
+        rules.prompt_update(self.caller)
 
 
 class CmdSetStat(MuxCommand):
