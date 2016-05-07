@@ -1,5 +1,6 @@
 import rules
 from evennia import ansi
+from evennia import utils
 
 def turn_prompt(character):
     "Gives a player combat information when their turn comes up."
@@ -88,3 +89,16 @@ def prompt_update(character):
         action = "|255[Second Attack Ready] |n"
     promptline = ("%s: %s %s %s%s" % (str(character), hbar, sptotal, action, moves))
     character.msg(prompt=ansi.strip_ansi(promptline))
+    
+def pretty_special(character, specialname):
+    "Returns a pretty-looking readout of a special move."
+    effectlist = character.db.Special_Moves[specialname][1]
+    effectstring = utils.list_to_string(effectlist, endsep="|255and|455", addquote=False)
+    effectstringlength = len(effectstring)
+    if "|255and|455" in effectstring:
+        effectstringlength -= 8
+    specialdesc = character.db.Special_Moves[specialname][2]
+    paddinglength = max((80 - effectstringlength - len(specialname) - 9), 0)
+    padding = ('{:-^%i}' % paddinglength).format('')
+    text = "|455%s |255[|455%s|255] %s |455%i|255 SP|n\n%s" % (specialname, effectstring, padding, rules.special_cost(effectlist), specialdesc)
+    return text
