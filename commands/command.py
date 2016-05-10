@@ -989,7 +989,7 @@ class CmdWithdraw(MuxCommand):
     Moves away another character.
     
     Usage:
-    withdraw <target> [Optional number of steps or 'all']
+    withdraw <target> [Optional number of steps]
     alias 'moveaway', 'retread', 'away', 'wd'
     
     Examples:
@@ -1025,18 +1025,15 @@ class CmdWithdraw(MuxCommand):
             self.caller.msg(cmd_check)
             return
         # If everything checks out, check to see if an argument is given.
-        distance = 1
+        distance = self.caller.db.Combat_Moves
         if len(self.arglist) > 0:
             who = self.arglist[0] 
         if len(self.arglist) > 1:
             distance = self.arglist[1]
-        if distance == "all":
-            distance = self.caller.db.Combat_Moves # Set distance to max movement if 'all' is given
-        else:
-            try: # Set distance to integer given or '1' if arg isn't integer
+            try: # Set distance to integer given or max movement if arg isn't integer
                 distance = max(1, int(distance)) 
             except (TypeError, ValueError):
-                distance = 1
+                distance = self.caller.db.Combat_Moves
         target = self.caller.search(who)
         # Let's also make sure they aren't too far away.
         if self.caller.db.Combat_Range[target] >= self.caller.location.db.RoomSize:
@@ -1054,7 +1051,7 @@ class CmdApproach(MuxCommand):
     Moves toward another character.
     
     Usage:
-    approach <target> [Optional number of steps or 'all']
+    approach <target> [Optional number of steps]
     alias 'move', 'step', 'moveto', 'ap'
     
     Examples:
@@ -1091,18 +1088,15 @@ class CmdApproach(MuxCommand):
             self.caller.msg(cmd_check)
             return
         # If everything checks out, check to see if an argument is given.
-        distance = 1
+        distance = self.caller.db.Combat_Moves
         if len(self.arglist) > 0:
             who = self.arglist[0] 
         if len(self.arglist) > 1:
             distance = self.arglist[1]
-        if distance == "all":
-            distance = self.caller.db.Combat_Moves
-        else:
             try:
                 distance = max(1, int(distance))
             except (TypeError, ValueError):
-                distance = 1
+                distance = self.caller.db.Combat_Moves
         target = self.caller.search(who)
         # Let's make sure they don't try to move farther than they can.
         if distance > self.caller.db.Combat_Moves:
