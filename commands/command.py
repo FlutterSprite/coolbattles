@@ -1008,6 +1008,10 @@ class CmdWithdraw(MuxCommand):
     half your MOB stat, rounded down - you can give up your action
     in combat to 'dash' and gain extra movement. See 'help dash'
     for details.
+        
+    Using this command with no arguments will use up your movement
+    until you reach the edge of the room. You can instead move a
+    limited number of steps by putting a number after the command.
     """
     key = "withdraw"
     aliases = ["moveaway", "retreat", "away", "wd"]
@@ -1070,6 +1074,11 @@ class CmdApproach(MuxCommand):
     half your MOB stat, rounded down - you can give up your action
     in combat to 'dash' and gain extra movement. See 'help dash'
     for details.
+    
+    Using this command with no arguments uses up your movement
+    until you reach your target. You can instead specify a number
+    of steps to move by putting a number at the end of the 
+    command.
     """
     key = "approach"
     aliases = ["move", "step", "moveto", "ap"]
@@ -1669,6 +1678,7 @@ class CmdRemoveSpecial(MuxCommand):
         "This performs the actual command."
         if not self.args or self.args == "" or self.args == " ":
             self.caller.msg("Please specify a special move name.")
+            return
         for special in self.caller.db.Special_Moves:
             if self.args.lower() in special.lower():
                 self.caller.msg("Special move %s deleted." % special)
