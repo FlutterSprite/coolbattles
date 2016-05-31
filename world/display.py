@@ -43,9 +43,9 @@ def health_bar(value, maximum, length):
     # Now, we create our base health bar string. This string is going to be padded to the length given.
     barstring = (("{:<%i}" % int(length)).format("HP: %i / %i" % (int(value), int(maximum))))
     # Lastly, we insert the color codes into the index calculated earlier to finish our health bar.
-    barstring = ("|555" + barcolor + barstring[:rounded_percent] + '|[011' + barstring[rounded_percent:])
+    barstring = ("|555" + barcolor + barstring[:rounded_percent] + '|n|[011' + barstring[rounded_percent:])
     # For some reason, sometimes the health bar is one character too long, so I fixed it here. Whatever.
-    return barstring[:int(length) + 13] + "|n"
+    return barstring[:int(length) + 15] + "|n"
 
 def combat_status_line(fighter, caller):
     "Prints out a one-line readout with a character's name, health bar, and range to the caller."
@@ -82,13 +82,14 @@ def prompt_update(character):
     if character.db.Combat_Actions:
         action = "|525[Action Ready]|n "
         if engaged:
+        # Colors the 'Action Ready' text red if engaged with anyone.
             action = "|522[Action Ready]|n "
     if character.db.Combat_Moves:
         moves = "|552[Moves: |554%i|552]|n" % character.db.Combat_Moves
     if character.db.Combat_Second:
         action = "|255[Second Attack Ready] |n"
     promptline = ("%s: %s %s %s%s" % (str(character), hbar, sptotal, action, moves))
-    character.msg(prompt=ansi.strip_ansi(promptline))
+    character.msg(prompt=promptline)
     
 def pretty_special(character, specialname):
     "Returns a pretty-looking readout of a special move."

@@ -81,6 +81,7 @@ def damage_target(target, damage):
     else:
         target.db.HP -= damage
     prompt_update(target)
+    target.msg(effect="Damage")
 
 def queue_attack(character, target, attack_message, effects, attack_type):
     "Queues an attack against a target, who can choose how to defend"

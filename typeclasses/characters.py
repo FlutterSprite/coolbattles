@@ -48,5 +48,13 @@ class Character(DefaultCharacter):
             self.caller.msg("You can't move, you've been defeated! Type 'return' to go back to the Institute and recover!")
             return False
         return True
+    def at_after_move(self, source_location):
+        """
+        We make sure to look around after a move.
+
+        """
+        if self.location.access(self, "view"):
+            self.msg(text=((self.at_look(self.location),), {"window":"room"}))
+            self.msg("%s arrives at %s." % (self, self.location))
     pass
 

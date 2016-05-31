@@ -145,6 +145,39 @@ class MuxCommand(default_cmds.MuxCommand):
         "Called after self.func()"
         rules.prompt_update(self.caller)
 
+class CmdLook(MuxCommand):
+    """
+    look at location or object
+
+    Usage:
+      look
+      look <obj>
+      look *<player>
+
+    Observes your location or objects in your vicinity.
+    """
+    # Overloads default 'look' command.
+    key = "look"
+    aliases = ["l", "ls"]
+    locks = "cmd:all()"
+    arg_regex = r"\s|$"
+
+    def func(self):
+        """
+        Handle the looking.
+        """
+        if not self.args:
+            target = self.caller.location
+            self.caller.msg(text=((self.caller.at_look(target),), {"window":"room"}))
+            return
+            if not target:
+                self.caller.msg("You have no location to look at!")
+                return
+        else:
+            target = self.caller.search(self.args)
+            if not target:
+                return
+        self.caller.msg(self.caller.at_look(target))
 
 class CmdSetStat(MuxCommand):
     """
